@@ -4,6 +4,10 @@ import Papa from "papaparse";
 import QuestionLayout from "./QuestionLayout";
 import './Converter.css';
 import Navbar from "./Navbar"
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+ 
+
 
 const ExcelPage = () => {
   const [questionData, setQuestionData] = useState(null);
@@ -13,10 +17,14 @@ const ExcelPage = () => {
   const [answers, setAnswers] = useState([])
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileFormatError, setFileFormatError] = useState(false); // State variable for file format error
+  const [isUploadEnabled, setIsUploadEnabled] = useState(false);
+  const navigate = useNavigate();
+  var exceld;
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
+    setIsUploadEnabled(true)
 
     // Check file extension
     if (!file.name.endsWith(".csv") && !file.name.endsWith(".xls") && !file.name.endsWith(".xlsx")) {
@@ -74,6 +82,62 @@ const ExcelPage = () => {
 
     reader.readAsBinaryString(selectedFile);
   };
+  const handleUpload1 = () => {
+ 
+    console.log("called")
+    if (!questionData) {
+      console.error("No data to upload");
+      return;
+    }
+ 
+   
+    const endpoint = "http://172.18.4.37:8096/question/upload";
+ 
+    // Make a POST request to backend API
+    axios.post(endpoint, { questions: questionData })
+      .then(response => {
+        console.log("Upload successful:", response);
+       
+      })
+      .catch(error => {
+        console.error("Upload failed:", error);
+      });
+  };
+
+
+  const handleUpload = async () => {
+    console.log("called");
+    if (!selectedFile) {
+      console.error("No data to upload");
+      return;
+    }
+  
+    const endpoint = "http://172.18.4.37:8096/question/upload";
+    
+    // Create a FormData object
+    const formData = new FormData();
+    
+    // Append the file data to the FormData object
+    formData.append('file', selectedFile); // Assuming questionData is the file object
+    try {
+      const response = await fetch('http://172.18.4.37:8096/question/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log('File uploaded successfully');
+        
+      } else {
+        console.error('Failed to upload file');
+
+      }
+    } catch (error) {
+      console.error('Error occurred while uploading file:', error);
+      // Handle error
+    }
+  };
+ 
 
   return (
     <div className="main">
@@ -87,7 +151,7 @@ const ExcelPage = () => {
           <div className="button-container">
           <button onClick={handlePreview} disabled={!selectedFile || fileFormatError} className={(!selectedFile || fileFormatError) ? 'disabled' : ''}> Preview </button>
 
-            <button> Upload</button>
+            {/* <button> Upload</button> */}
           </div>
           {selectedFile && <p>Selected file: {selectedFile.name}</p>}
         </>
@@ -114,8 +178,10 @@ const ExcelPage = () => {
               qnum={index}
             />
           ))}
-          <button>Ok</button>
-          <button>Cancel</button>
+            <div className="but">
+            <button onClick={handleUpload}>Upload</button>
+            <button onClick={() => navigate(0)}>Cancel</button>
+        </div>
         </div>
       )}
     </div>

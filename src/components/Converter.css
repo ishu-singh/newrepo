@@ -62,4 +62,24 @@ button.disabled {
   background-color: #cccccc; /* Light gray background color */
   color: #999999; 
 }
+.but {
+  position: absolute; /* or 'fixed' if you want it to remain fixed during scrolling */
+  top: 0; /* Position at the top */
+  right: 0; /* Position at the right */
+  padding: 10px; /* Add padding around the container */
+}
 
+.but button {
+  margin-left: 10px; /* Add margin between buttons */
+  padding: 10px; /* Add padding to buttons */
+  margin-top: 65px;
+  background-color: #007bff; /* Set background color */
+  color: #fff; /* Set text color */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Add border radius */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+.but button:hover {
+  background-color: #160e2c; /* Darken background color on hover */
+}
