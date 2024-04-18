@@ -11,9 +11,20 @@ function App() {
 
           <Route path='/upload' exact element={<Converter/>}/>
           <Route path='/qlayout' exact element={<QuestionLayout/>}/>
+      
 
         </Routes>
       </Router>
+      <div>
+      
+      <style>
+        {`
+          body {
+            background-color: rgb(228, 222, 222);
+          }
+        `}
+      </style>
+    </div>
     </>
   );
 }

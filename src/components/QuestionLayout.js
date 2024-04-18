@@ -4,13 +4,13 @@ import check from './images/check.png'
 
 const QuestionLayout = (props) => {
   return (
-    <div className="questions-cont">
+    <div className="h-96 flex flex-col items-center justify-center w-3/4 shadow-md m-4 rounded-lg border border-gray-300 bg-gray-100">
       <div className="subject">Subject: {props.subject}</div>
       <div className="question">
         Q{props.qnum + 1}. {props.question}
       </div>
 
-      <div className="options">
+      <div className="options mt-10 mb-30 w-80 mx-auto flex flex-col items-center justify-center">
         <div className="option">
           {props.option1}
           {props.answer.includes('A') ? <img className='check' src={check}/> : ""}
@@ -56,11 +56,11 @@ const QuestionLayout = (props) => {
         </div>}
         
       </div>
-      <div className="cont1">
+      <div className="mt-10 w-90 flex justify-between space-x-96 ">
         <div className="sub-topic">Sub Topic: {props.subTopic}</div>
-        <div className="difficulty-level">Difficulty Level: {props.level}</div>
+        <div className="difficulty-level ml-auto">Difficulty Level: {props.level}</div>
       </div>
-      <div className="cont2">
+      <div className="mt-10 w-90 flex justify-between space-x-96">
         <div className="q-type">Type: {props.qtype}</div>
         <div className="a-type">Answer Type: {props.atype}</div>
       </div>
