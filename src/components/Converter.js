@@ -6,35 +6,42 @@ import './Converter.css';
 import Navbar from "./Navbar"
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
- 
+import image from './images/image.png';
 
 
 const ExcelPage = () => {
   const [questionData, setQuestionData] = useState(null);
   const [previewData, setPreviewData] = useState(false);
   const [questions, setQuestions] = useState([]);
-  const [options, setOptions] = useState([])
-  const [answers, setAnswers] = useState([])
+  const [options, setOptions] = useState([]);
+  const [answers, setAnswers] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileFormatError, setFileFormatError] = useState(false); // State variable for file format error
   const [isUploadEnabled, setIsUploadEnabled] = useState(false);
   const navigate = useNavigate();
-  var exceld;
+  const [fileFormatError, setFileFormatError] = useState(false);
+  const [showImage, setShowImage] = useState(false);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
-    setIsUploadEnabled(true)
+    setIsUploadEnabled(true);
 
     // Check file extension
     if (!file.name.endsWith(".csv") && !file.name.endsWith(".xls") && !file.name.endsWith(".xlsx")) {
+      alert("Unsupported file \n Please upload an Excel file only."); // Display error message as alert
       setFileFormatError(true); // Set file format error state
       return;
-    }else{
-
-      setFileFormatError(false); // Reset file format error statenpm start
+    } else {
+      setFileFormatError(false); // Reset file format error state
     }
+  };
 
+  const toggleImageModal = () => {
+    setShowImage(!showImage);
+  };
+  const handleClose = () => {
+    setShowImage(false);
+    navigate(0); // Go back to the previous page
   };
 
   const handlePreview = () => {
@@ -66,14 +73,10 @@ const ExcelPage = () => {
         const sheet = workbook.Sheets[sheetName];
         const excelData = XLSX.utils.sheet_to_json(sheet, { header: 0 });
         const extractedQuestions = excelData.map(row => row.title);
-        // const extractedOptions = excelData.map(row => row.options.split(','));
         const extractedAnswers = excelData.map(row => row.answers.split(','));
-        console.log("data",extractedAnswers)
-        // const convertedOptions = extractedOptions.split(",")
         setQuestionData(excelData);
         setAnswers(extractedAnswers)
         setQuestions(extractedQuestions);
-        // setOptions(extractedOptions)
         setPreviewData(true);
       } else {
         console.error("Unsupported file format");
@@ -82,81 +85,89 @@ const ExcelPage = () => {
 
     reader.readAsBinaryString(selectedFile);
   };
-  const handleUpload1 = () => {
- 
-    console.log("called")
-    if (!questionData) {
-      console.error("No data to upload");
-      return;
-    }
- 
-   
-    const endpoint = "http://172.18.4.37:8096/question/upload";
- 
-    // Make a POST request to backend API
-    axios.post(endpoint, { questions: questionData })
-      .then(response => {
-        console.log("Upload successful:", response);
-       
-      })
-      .catch(error => {
-        console.error("Upload failed:", error);
-      });
-  };
-
-
   const handleUpload = async () => {
-    console.log("called");
+    console.log("handleUpload called"); // Add this line for debugging
+
     if (!selectedFile) {
       console.error("No data to upload");
       return;
     }
   
-    const endpoint = "http://172.18.4.37:8096/question/upload";
-    
+    const endpoint = "http://172.18.4.45:8085/question/upload";
+  
     // Create a FormData object
     const formData = new FormData();
-    
+  
     // Append the file data to the FormData object
     formData.append('file', selectedFile); // Assuming questionData is the file object
     try {
-      const response = await fetch('http://172.18.4.37:8096/question/upload', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
       });
-
+  
       if (response.ok) {
+        alert('File uploaded successfully'); // Display alert for successful upload
         console.log('File uploaded successfully');
-        
       } else {
         console.error('Failed to upload file');
-
       }
     } catch (error) {
       console.error('Error occurred while uploading file:', error);
       // Handle error
     }
   };
- 
+  
+  
+
+  const handleCancel = () => {
+    const confirmed = window.confirm("Are you sure you want to cancel?");
+    
+    if (confirmed) {
+      navigate(0); // Redirect to previous page if user cancels
+    }
+  };
+  
+  
 
   return (
-    <div className="main">
+    <div className="main text-center">
       {/* Include the Navbar component */}
       <Navbar />
       {questions.length === 0 ? (
         <>
-          <h1>Upload Question Bank</h1>
-          <input type="file" onChange={handleFileChange} />
-          {fileFormatError && <p>Please upload an Excel or CSV file only.</p>}
-          <div className="button-container">
-          <button onClick={handlePreview} disabled={!selectedFile || fileFormatError} className={(!selectedFile || fileFormatError) ? 'disabled' : ''}> Preview </button>
+          <h1 className="font-bold text-3xl mb-4">Upload Question Bank</h1>
+          <div className="mb-4 flex items-center justify-center space-x-2">
+        <h2 className="text-lg font-semibold">Required Fields in the Excel:</h2>
+        <button onClick={toggleImageModal} className="text-blue-500 underline">Sample</button>
+      </div>
+      {showImage && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="relative max-w-screen-sm mx-auto">
+      <button onClick={handleClose} className="absolute top-0 right-0 -mt-12 -mr-12 p-4 text-red text-xl z-10">&times;</button>
+      <img
+        src={image}
+        alt="Excel Required Fields"
+        className="mx-auto transition-transform duration-300 transform hover:scale-150"
+        style={{ width: '200%', height: 'auto' }}
+      />
+    </div>
+  </div>
+)}
 
-            {/* <button> Upload</button> */}
-          </div>
+
+
+          <input type="file" onChange={handleFileChange} />
+          {selectedFile && (
+            <div className="flex justify-center">
+              <button onClick={handlePreview} className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-800"> Preview </button>
+            </div>
+          )}
+
           {selectedFile && <p>Selected file: {selectedFile.name}</p>}
         </>
       ) : (
-        <div className="cont">
+        <div className="cont mt-20">
           {questionData.map((data, index) => (
             <QuestionLayout
               key={index}
@@ -178,10 +189,10 @@ const ExcelPage = () => {
               qnum={index}
             />
           ))}
-            <div className="but">
-            <button onClick={handleUpload}>Upload</button>
-            <button onClick={() => navigate(0)}>Cancel</button>
-        </div>
+          <div className="but absolute top-0 right-0 mt-4 mr-4">
+            <button onClick={handleUpload} className="px-4 py-2 mt-16 bg-blue-600 text-white rounded cursor-pointer mr-2">Upload</button>
+            <button onClick={handleCancel} className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer">Cancel</button>
+          </div>
         </div>
       )}
     </div>

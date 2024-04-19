@@ -25,6 +25,12 @@ function App() {
         `}
       </style>
     </div>
+    <div className="flex justify-center flex-col items-center mt-20">
+ 
+ </div>
+ <div className="flex justify-center items-center flex-col">
+   {/* Content goes here */}
+ </div>
     </>
   );
 }
