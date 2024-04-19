@@ -1,5 +1,4 @@
 import React from "react";
-import "./QuestionLayout.css";
 import check from './images/check.png'
 
 const QuestionLayout = (props) => {

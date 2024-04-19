@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import Papa from "papaparse";
 import QuestionLayout from "./QuestionLayout";
-import './Converter.css';
 import Navbar from "./Navbar"
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -28,7 +27,7 @@ const ExcelPage = () => {
 
     // Check file extension
     if (!file.name.endsWith(".csv") && !file.name.endsWith(".xls") && !file.name.endsWith(".xlsx")) {
-      alert("Unsupported file \n Please upload an Excel file only."); // Display error message as alert
+      alert("Unsupported file \nPlease upload an Excel file only."); // Display error message as alert
       setFileFormatError(true); // Set file format error state
       return;
     } else {
